@@ -18,7 +18,20 @@ spec:
       - name: mongodb
         image: mongo:5.0
         ports:
-        - containerPort: 27017
+        - containerPort: 27017 # Found in the mongo dockerhub docs
+        env: # Passing environment values
+        - name: MONGO_INITDB_ROOT_USERNAME # Found in mongo dockerhub docs
+          valueFrom: # A way of accessing values from another resource
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-user
+          # value: my user # can do this plainly if we weren't taking from a secret.
+        - name: MONGO_INITDB_ROOT_PASSWORD # Found in mongo dockerhub docs
+          valueFrom: # A way of accessing values from another resource
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-password
+          # value: my user # can do this plainly if we weren't taking from a secret.
 
 ---
 

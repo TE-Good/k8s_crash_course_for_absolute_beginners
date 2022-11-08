@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp # Whatever label contains this, will belong to this string will belong to this deployment
+  template: # Configuration of the Pod within the configuration of the Deployment
+    metadata:
+      labels:
+        app: webapp # Determines the identifier for all Pods created here
+    spec:
+      containers:
+      - name: webapp
+        image: nanajanashia/k8s-demo-app:v1.0
+        ports:
+        - containerPort: 3000
+    env:
+    - name: USER_NAME
+      valueForm:
+        secretKeyRef:
+          name: mongo-secret
+          key: mongo-user
+    - name: USER_PWD
+      valueForm:
+        secretKeyRef: # Getting a config value from a Secret resource
+          name: mongo-secret
+          key: mongo-password
+    - name: DB_URL
+      valueForm:
+        configMapKeyRef: # Getting a config value from a ConfigMap resource
+          name: mongo-config
+          key: mongo-url
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort # External Service type. Default type is ClusterIP which means internal
+  selector: # How to find the right Pods to forward the to.
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 3000 # Sets the port of the service. Sometimes standard to make it the same as the targetPort.
+      targetPort: 3000 # The port of the Pod we're targeting. Where the service should forward to.
+      nodePort: 30100 # Required for NodePort type. Must be between 30100 and 32767
