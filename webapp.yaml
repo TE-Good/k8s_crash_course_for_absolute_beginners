@@ -19,22 +19,22 @@ spec:
         image: nanajanashia/k8s-demo-app:v1.0
         ports:
         - containerPort: 3000
-    env:
-    - name: USER_NAME
-      valueForm:
-        secretKeyRef:
-          name: mongo-secret
-          key: mongo-user
-    - name: USER_PWD
-      valueForm:
-        secretKeyRef: # Getting a config value from a Secret resource
-          name: mongo-secret
-          key: mongo-password
-    - name: DB_URL
-      valueForm:
-        configMapKeyRef: # Getting a config value from a ConfigMap resource
-          name: mongo-config
-          key: mongo-url
+        env:
+        - name: USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-user
+        - name: USER_PWD
+          valueFrom:
+            secretKeyRef: # Getting a config value from a Secret resource
+              name: mongo-secret
+              key: mongo-password
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef: # Getting a config value from a ConfigMap resource
+              name: mongo-config
+              key: mongo-url
 
 ---
 
